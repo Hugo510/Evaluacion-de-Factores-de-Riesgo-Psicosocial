@@ -1,16 +1,28 @@
 /**
  * Datos de usuarios para seeding
+ * @module prisma/seeds/data/users
  */
 import { Role } from "@prisma/client";
 
+/**
+ * Interfaz para los datos de usuario usados en el seeding
+ */
 export interface UserSeedData {
+  /** Nombre completo del usuario */
   name: string;
+  /** Correo electrónico (único) */
   email: string;
-  password: string; // Sin hash, se aplicará en el script
+  /** Contraseña (sin hash, se aplicará en el script) */
+  password: string;
+  /** Rol del usuario (ADMIN o WORKER) */
   role: Role;
+  /** Departamento al que pertenece */
   department: string;
 }
 
+/**
+ * Datos de usuarios para seeding
+ */
 export const users: UserSeedData[] = [
   {
     name: "Administrador",
