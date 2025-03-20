@@ -21,6 +21,18 @@ import errorMiddleware from "./middleware/errorMiddleware";
 
 const app = express();
 
+// Configuración de CORS según el entorno
+const corsOptions = {
+  origin:
+    env.NODE_ENV === "development"
+      ? ["http://localhost:5173", "http://127.0.0.1:5173"] // Orígenes típicos de desarrollo para Vite
+      : "https://tu-dominio-de-produccion.com", // Reemplazar con el dominio real de producción
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
 // Configuración de rate limit
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
@@ -32,7 +44,7 @@ const limiter = rateLimit({
 });
 
 // Middleware básicos
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
