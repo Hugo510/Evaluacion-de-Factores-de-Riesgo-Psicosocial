@@ -2,33 +2,49 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
+import logger from "../config/logger";
 
-// Extensión de Request para incluir el usuario autenticado
+// Extender el tipo Request para incluir el usuario autenticado
 export interface AuthenticatedRequest extends Request {
-  user?: any; // Se recomienda definir un tipo más específico según el payload del token
+  user?: {
+    id: number;
+    email: string;
+    role: string;
+  };
 }
 
 export const authMiddleware = (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ message: "Authorization header missing" });
-  }
-
-  // Se espera el formato "Bearer <token>"
-  const token = authHeader.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "Token missing" });
-  }
-
+): void => {
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET);
-    req.user = decoded;
-    next();
+    // Obtener el token del header Authorization
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      res.status(401).json({ message: "No token provided" });
+      return;
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    // Verificar el token
+    try {
+      const decoded = jwt.verify(token, env.JWT_SECRET);
+      req.user = decoded as {
+        id: number;
+        email: string;
+        role: string;
+      };
+      next();
+    } catch (error) {
+      logger.warn("Invalid token", { error });
+      res.status(401).json({ message: "Invalid token" });
+      return;
+    }
   } catch (error) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    logger.error("Error in auth middleware", { error });
+    res.status(500).json({ message: "Internal server error" });
+    return;
   }
 };
