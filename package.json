@@ -6,7 +6,11 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "seed": "ts-node prisma/seeds/index.ts",
+    "seed:users": "ts-node prisma/seeds/index.ts --only users",
+    "seed:questionnaires": "ts-node prisma/seeds/index.ts --only questionnaires",
+    "seed:responses": "ts-node prisma/seeds/index.ts --only responses"
   },
   "keywords": [],
   "author": "",
