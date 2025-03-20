@@ -1,5 +1,6 @@
 // src/config/swagger.ts
 import swaggerJSDoc from "swagger-jsdoc";
+import { env } from "./env";
 
 const options = {
   definition: {
@@ -12,7 +13,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
+        url: `http://localhost:${env.PORT}`,
         description: "Servidor de desarrollo",
       },
     ],

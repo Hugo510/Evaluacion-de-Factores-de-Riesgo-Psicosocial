@@ -37,7 +37,7 @@ const logger = winston.createLogger({
 });
 
 // En entornos de desarrollo, se pueden agregar más detalles
-if (env.nodeEnv !== "production") {
+if (env.NODE_ENV !== "production") {
   logger.debug("Logging initialized at debug level");
 }
 
