@@ -1,12 +1,14 @@
+import { AuthResponse } from "../services/authService";
+
 export enum Role {
-  ADMIN = 'ADMIN',
-  WORKER = 'WORKER'
+  ADMIN = "ADMIN",
+  WORKER = "WORKER",
 }
 
 export enum RiskLevel {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH'
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
 }
 
 export interface User {
@@ -43,9 +45,19 @@ export interface Response {
 
 export interface AuthState {
   user: User | null;
+  token: string | null;
   isLoading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<AuthResponse>;
+  register: (userData: {
+    email: string;
+    password: string;
+    name: string;
+    role?: Role;
+    department?: string;
+  }) => Promise<AuthResponse>;
   logout: () => Promise<void>;
+  loadUser: () => Promise<void>;
   clearError: () => void;
+  setToken: (token: string | null) => void;
 }

@@ -1,49 +1,118 @@
-import { create } from 'zustand';
-import { supabase } from '../lib/supabase';
-import { AuthState, Role } from '../types';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { authService } from "../services/authService";
+import { AuthState } from "../types";
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  isLoading: false,
-  error: null,
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      token: null,
+      isLoading: false,
+      error: null,
 
-  login: async (email: string, password: string) => {
-    try {
-      set({ isLoading: true, error: null });
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      setToken: (token: string | null) => set({ token }),
 
-      if (error) throw error;
+      login: async (email: string, password: string) => {
+        try {
+          set({ isLoading: true, error: null });
 
-      if (data.user) {
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', data.user.id)
-          .single();
+          const authData = await authService.login(email, password);
 
-        if (userError) throw userError;
+          // Guardar datos de autenticación en el store
+          set({
+            user: authData.user,
+            token: authData.token,
+            isLoading: false,
+          });
 
-        set({ user: userData, isLoading: false });
-      }
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
+          // Retornar authData para cumplir con el tipo Promise<AuthResponse>
+          return authData;
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Error de inicio de sesión";
+          set({
+            error: errorMessage,
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      register: async (userData) => {
+        try {
+          set({ isLoading: true, error: null });
+
+          const authData = await authService.register(userData);
+
+          // Guardar datos de autenticación en el store
+          set({
+            user: authData.user,
+            token: authData.token,
+            isLoading: false,
+          });
+
+          return authData;
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Error al registrar usuario";
+          set({
+            error: errorMessage,
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      logout: async () => {
+        try {
+          set({ isLoading: true, error: null });
+          await authService.logout();
+          set({ user: null, token: null, isLoading: false });
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Error de cierre de sesión";
+          set({
+            error: errorMessage,
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      // Método para cargar el usuario actual usando el token almacenado en el store
+      loadUser: async () => {
+        const token = get().token;
+        if (!token) return;
+
+        try {
+          set({ isLoading: true, error: null });
+          const user = await authService.getCurrentUser();
+          set({ user, isLoading: false });
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "Error al cargar usuario";
+          set({
+            error: errorMessage,
+            isLoading: false,
+            user: null,
+          });
+          // Si hay error al cargar el usuario, limpiar el token del store
+          set({ token: null });
+        }
+      },
+
+      clearError: () => set({ error: null }),
+    }),
+    {
+      name: "auth-storage", // Nombre del almacenamiento persistente
+      partialize: (state) => ({ user: state.user, token: state.token }), // Solo persistir estos campos
     }
-  },
-
-  logout: async () => {
-    try {
-      set({ isLoading: true, error: null });
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      set({ user: null, isLoading: false });
-    } catch (error) {
-      set({ error: (error as Error).message, isLoading: false });
-    }
-  },
-
-  clearError: () => set({ error: null }),
-}));
+  )
+);
