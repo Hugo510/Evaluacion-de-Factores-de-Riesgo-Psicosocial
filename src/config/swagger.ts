@@ -273,6 +273,49 @@ const options = {
             "database",
           ],
         },
+        // Esquema de respuesta del usuario actual
+        CurrentUser: {
+          type: "object",
+          properties: {
+            success: {
+              type: "boolean",
+              example: true,
+              description: "Indica si la solicitud fue exitosa",
+            },
+            user: {
+              type: "object",
+              properties: {
+                id: {
+                  type: "number",
+                  example: 1,
+                  description: "ID único del usuario",
+                },
+                name: {
+                  type: "string",
+                  example: "Juan Pérez",
+                  description: "Nombre completo del usuario",
+                },
+                email: {
+                  type: "string",
+                  format: "email",
+                  example: "juan@example.com",
+                  description: "Correo electrónico del usuario",
+                },
+                role: {
+                  type: "string",
+                  enum: ["ADMIN", "WORKER"],
+                  example: "WORKER",
+                  description: "Rol del usuario en el sistema",
+                },
+                department: {
+                  type: "string",
+                  example: "Recursos Humanos",
+                  description: "Departamento al que pertenece el usuario",
+                },
+              },
+            },
+          },
+        },
       },
       securitySchemes: {
         bearerAuth: {

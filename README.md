@@ -119,6 +119,7 @@ La aplicación proporciona los siguientes endpoints:
 
 - `POST /auth/login` - Iniciar sesión
 - `POST /auth/register` - Registrar nuevo usuario
+- `GET /auth/me` - Obtener información del usuario autenticado actualmente
 
 ### Cuestionarios
 

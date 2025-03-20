@@ -45,5 +45,22 @@ export class UserService {
     });
   }
 
+  /**
+   * Obtiene un usuario por su ID.
+   * @param id ID del usuario.
+   * @returns Usuario encontrado o null si no existe.
+   * @example
+   * // Obtener un usuario por su ID
+   * const user = await UserService.getUserById(1);
+   * if (user) {
+   *   console.log(`Usuario encontrado: ${user.name}`);
+   * }
+   */
+  static async getUserById(id: number): Promise<User | null> {
+    return prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
   // Se pueden agregar más métodos: actualizar, eliminar, etc.
 }

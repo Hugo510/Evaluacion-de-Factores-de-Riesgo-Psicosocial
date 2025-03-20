@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { env } from "../config/env";
 import { LoginInput, RegisterInput } from "../schemas/authSchemas";
 import { UserService } from "../services/userService";
+import { AuthenticatedRequest } from "../middleware/authMiddleware";
 
 export const login = async (
   req: Request,
@@ -74,6 +75,54 @@ export const register = async (
     );
 
     res.status(201).json(newUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Obtiene la información del usuario autenticado actual basado en su token JWT
+ *
+ * @param {AuthenticatedRequest} req - Solicitud HTTP con datos del usuario autenticado
+ * @param {Response} res - Respuesta HTTP
+ * @param {NextFunction} next - Función para pasar al siguiente middleware
+ * @returns {Promise<void>}
+ */
+export const getMe = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res
+        .status(401)
+        .json({ success: false, message: "Usuario no autenticado" });
+      return;
+    }
+
+    const user = await UserService.getUserById(userId);
+
+    if (!user) {
+      res
+        .status(404)
+        .json({ success: false, message: "Usuario no encontrado" });
+      return;
+    }
+
+    // Devolver información del usuario sin incluir campos sensibles
+    res.status(200).json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        department: user.department,
+      },
+    });
   } catch (error) {
     next(error);
   }
