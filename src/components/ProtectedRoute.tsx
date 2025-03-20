@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { Role } from '../types';
 
@@ -8,12 +8,14 @@ interface ProtectedRouteProps {
   allowedRoles?: Role[];
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  allowedRoles 
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  allowedRoles
 }) => {
-  const { user, isLoading } = useAuthStore();
+  const { user, isLoading, token } = useAuthStore();
+  const location = useLocation();
 
+  // Si está cargando, mostrar un indicador de carga
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -22,13 +24,17 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  // Si no hay usuario o token, redirigir al login
+  if (!user || !token) {
+    // Guardar la ubicación actual para redirigir después del login
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
+  // Si hay roles permitidos y el usuario no tiene el rol adecuado, redirigir a la página principal
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
 
+  // Si todo está bien, mostrar el componente hijo
   return <>{children}</>;
 };

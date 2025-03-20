@@ -16,11 +16,16 @@ export interface AuthResponse {
 
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>("/auth/login", {
-      email,
-      password,
-    });
-    return response.data;
+    try {
+      const response = await api.post<AuthResponse>("/auth/login", {
+        email,
+        password,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error detallado durante login:", error);
+      throw error;
+    }
   },
 
   logout: async (): Promise<void> => {

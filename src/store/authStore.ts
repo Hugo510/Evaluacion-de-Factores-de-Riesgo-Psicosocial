@@ -89,7 +89,11 @@ export const useAuthStore = create<AuthState>()(
       // Método para cargar el usuario actual usando el token almacenado en el store
       loadUser: async () => {
         const token = get().token;
-        if (!token) return;
+        if (!token) {
+          // Si no hay token, asegurarnos de que el estado refleje eso correctamente
+          set({ user: null, token: null, isLoading: false });
+          return;
+        }
 
         try {
           set({ isLoading: true, error: null });
@@ -102,9 +106,8 @@ export const useAuthStore = create<AuthState>()(
             error: errorMessage,
             isLoading: false,
             user: null,
+            token: null, // Limpiar el token si hay un error
           });
-          // Si hay error al cargar el usuario, limpiar el token del store
-          set({ token: null });
         }
       },
 
