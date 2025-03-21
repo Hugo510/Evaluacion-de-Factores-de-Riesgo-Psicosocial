@@ -14,6 +14,12 @@ export interface AuthResponse {
   token: string;
 }
 
+// Definir la estructura de respuesta para getCurrentUser
+interface GetCurrentUserResponse {
+  success: boolean;
+  user: User;
+}
+
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
     try {
@@ -33,8 +39,13 @@ export const authService = {
   },
 
   getCurrentUser: async (): Promise<User> => {
-    const response = await api.get<User>("/auth/me");
-    return response.data;
+    const response = await api.get<GetCurrentUserResponse>("/auth/me");
+
+    if (!response.data.success) {
+      throw new Error("No se pudo obtener información del usuario");
+    }
+
+    return response.data.user;
   },
 
   register: async (userData: UserRegistrationData): Promise<AuthResponse> => {

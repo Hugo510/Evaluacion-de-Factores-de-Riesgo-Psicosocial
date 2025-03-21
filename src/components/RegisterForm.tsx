@@ -103,9 +103,9 @@ export const RegisterForm: React.FC = () => {
             // Intentar registro
             const response = await register(userData);
 
-            // Redireccionar en caso de éxito
+            // Redireccionar a Login en caso de éxito
             if (response && response.user) {
-                navigate(from, { replace: true });
+                navigate("/login", { replace: true });
             }
         } catch (err) {
             // Error manejado por el store, no es necesario hacer nada aquí
