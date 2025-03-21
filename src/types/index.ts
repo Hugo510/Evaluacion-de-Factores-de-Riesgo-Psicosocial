@@ -21,7 +21,7 @@ export interface User {
 }
 
 export interface Questionnaire {
-  id: number;
+  id?: number;
   title: string;
   description: string;
   questions: Question[];
@@ -37,7 +37,7 @@ export interface Question {
 export interface Response {
   id: number;
   userId: number;
-  questionnaireId: number;
+  questionnaireId?: number;
   answers: Record<number, number>;
   riskLevel: RiskLevel;
   createdAt: Date;
