@@ -23,9 +23,29 @@ export const Reports: React.FC = () => {
     return '5';
   };
 
-  const handleLoadUserReport = () => {
-    // Implementar lógica para cargar el reporte del usuario
-    loadUserReport(1); // ID del usuario quemado para pruebas
+  const handleLoadUserReport = async () => {
+    try {
+      // Implementar lógica para cargar el reporte del usuario
+      await loadUserReport(1); // ID del usuario quemado para pruebas
+    } catch (error) {
+      console.error("Error al cargar el reporte:", error);
+    }
+  };
+
+  const handleDownloadPdf = () => {
+    if (!userReport) return;
+
+    // Crear un enlace temporal para descargar el PDF
+    const url = window.URL.createObjectURL(userReport.pdfBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', userReport.filename);
+    document.body.appendChild(link);
+    link.click();
+
+    // Limpieza
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(link);
   };
 
   return (
@@ -51,8 +71,6 @@ export const Reports: React.FC = () => {
               <Download className="w-5 h-5" strokeWidth={1.5} />
               <span>Cargar Reporte Usuario</span>
             </button>
-
-
           </div>
         </div>
 
@@ -138,13 +156,18 @@ export const Reports: React.FC = () => {
         </div>
       </div>
 
-      {/* Mostrar URL del reporte del usuario */}
+      {/* Mostrar opción para descargar el reporte del usuario */}
       {userReport && (
-        <div className="mt-8">
+        <div className="mt-8 bg-white rounded-2xl p-8 shadow-[0_0_40px_-12px_rgb(0,0,0,0.1)] backdrop-blur-xl">
           <h2 className="text-2xl font-light text-gray-900 mb-6">Reporte del Usuario</h2>
-          <a href={userReport.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-            Descargar Reporte del Usuario (PDF)
-          </a>
+          <p className="text-gray-600 mb-4">El reporte ha sido generado correctamente.</p>
+          <button
+            onClick={handleDownloadPdf}
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
+          >
+            <Download className="w-5 h-5" strokeWidth={1.5} />
+            <span>Descargar PDF</span>
+          </button>
         </div>
       )}
     </div>

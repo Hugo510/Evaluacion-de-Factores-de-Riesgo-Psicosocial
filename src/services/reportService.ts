@@ -8,8 +8,8 @@ export interface DepartmentReport {
 
 export interface UserReport {
   userId: number;
-  // Supongamos que se retorna un PDF en formato blob o una URL para descargarlo
-  pdfUrl: string;
+  pdfBlob: Blob;
+  filename: string;
 }
 
 export const reportService = {
@@ -17,9 +17,23 @@ export const reportService = {
     const response = await api.get(`/reports/user/${userId}`, {
       responseType: "blob",
     });
-    // Crea una URL local para el blob recibido
-    const pdfUrl = URL.createObjectURL(response.data);
-    return { userId, pdfUrl };
+    
+    // Extraer el nombre del archivo de Content-Disposition
+    const contentDisposition = response.headers['content-disposition'];
+    let filename = `report-${userId}.pdf`;
+    
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename=(.*?\.pdf)/i);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1].replace(/"/g, '');
+      }
+    }
+
+    return { 
+      userId, 
+      pdfBlob: response.data, 
+      filename 
+    };
   },
 
   getDepartmentReport: async (): Promise<DepartmentReport[]> => {
