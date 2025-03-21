@@ -10,9 +10,7 @@ export default async function seedResponses(
 ): Promise<Response[]> {
   return executeSeedWithTransaction(prisma, "response", async () => {
     // Obtener usuarios y cuestionarios existentes
-    const users = await prisma.user.findMany({
-      where: { role: "WORKER" },
-    });
+    const users = await prisma.user.findMany(); // Modificado: incluir todos los usuarios, no solo trabajadores
 
     const questionnaires = await prisma.questionnaire.findMany({
       include: { questions: true },
