@@ -53,13 +53,18 @@ export class ReportService {
   static async getDepartmentReports(): Promise<any> {
     // Ejemplo de consulta utilizando SQL crudo para obtener totales por departamento
     const reports = await prisma.$queryRaw<
-      { department: string; totalResponses: number }[]
+      { department: string; totalResponses: bigint }[]
     >`
       SELECT u.department, COUNT(r.id) as totalResponses
       FROM User u
       JOIN Response r ON u.id = r.userId
       GROUP BY u.department
     `;
-    return reports;
+
+    // Convertir BigInt a números para evitar errores de serialización
+    return reports.map((report) => ({
+      department: report.department,
+      totalResponses: Number(report.totalResponses),
+    }));
   }
 }

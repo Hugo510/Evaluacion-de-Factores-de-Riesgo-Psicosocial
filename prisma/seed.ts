@@ -92,7 +92,25 @@ async function main() {
     },
   });
 
-  console.log("Respuesta creada:", responseRecord);
+  console.log("Respuesta creada para worker1:", responseRecord);
+
+  // AGREGAMOS UNA RESPUESTA PARA EL USUARIO ADMIN (ID 1)
+  const adminAnswers = [
+    { questionId: questionnaire.questions[0].id, value: 3 },
+    { questionId: questionnaire.questions[1].id, value: 2 },
+    { questionId: questionnaire.questions[2].id, value: 4 },
+  ];
+
+  const adminResponseRecord = await prisma.response.create({
+    data: {
+      userId: admin.id, // El usuario admin se creó anteriormente
+      questionnaireId: questionnaire.id,
+      answers: adminAnswers,
+      riskLevel: RiskLevel.MEDIUM,
+    },
+  });
+
+  console.log("Respuesta creada para admin:", adminResponseRecord);
 }
 
 main()

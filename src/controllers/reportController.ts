@@ -48,7 +48,7 @@ export const getDepartmentReport = async (
     const userRole = req.user?.role;
 
     // Verificar si el usuario tiene permisos para ver reportes de departamento
-    if (!userRole || userRole !== "admin") {
+    if (!userRole || userRole !== "ADMIN") {
       res.status(403).json({ message: "Acceso denegado" });
       return;
     }

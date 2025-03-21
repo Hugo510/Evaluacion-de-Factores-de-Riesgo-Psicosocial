@@ -57,6 +57,10 @@ Este proyecto implementa una API RESTful para la identificación, análisis y pr
    ```bash
    npm run seed
    ```
+   Este comando utiliza el script de entrada ubicado en `prisma/seeds/index.ts`, el cual ejecuta en orden los scripts para sembrar usuarios, cuestionarios y respuestas. Para ejecutar únicamente ciertos seeds, puedes usar:
+   ```bash
+   npm run seed -- --only users,questionnaires
+   ```
 
 ## Estructura del proyecto
 

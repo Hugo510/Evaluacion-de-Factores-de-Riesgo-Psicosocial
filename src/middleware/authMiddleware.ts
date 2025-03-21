@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 import logger from "../config/logger";
+import { TokenService } from "../services/tokenService";
 
 // Extender el tipo Request para incluir el usuario autenticado
 export interface AuthenticatedRequest extends Request {
@@ -27,6 +28,13 @@ export const authMiddleware = (
     }
 
     const token = authHeader.split(" ")[1];
+
+    // Verificar si el token está en la lista negra
+    if (TokenService.isTokenBlacklisted(token)) {
+      logger.warn("Token en lista negra intentando acceder");
+      res.status(401).json({ message: "Token has been invalidated" });
+      return;
+    }
 
     // Verificar el token
     try {

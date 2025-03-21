@@ -1,6 +1,6 @@
 // src/routes/authRoutes.ts
 import { Router } from "express";
-import { login, register, getMe } from "../controllers/authController";
+import { login, register, getMe, logout } from "../controllers/authController";
 import { validateBody } from "../middleware/validationMiddleware";
 import { loginSchema, registerSchema } from "../schemas/authSchemas";
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -92,5 +92,30 @@ router.post("/register", validateBody(registerSchema), register);
  *         description: Usuario no encontrado
  */
 router.get("/me", authMiddleware, getMe);
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Cierra la sesión del usuario invalidando el token
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Sesión cerrada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Sesión cerrada exitosamente"
+ */
+router.post("/logout", authMiddleware, logout);
 
 export default router;

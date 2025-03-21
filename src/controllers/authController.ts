@@ -6,6 +6,7 @@ import { env } from "../config/env";
 import { LoginInput, RegisterInput } from "../schemas/authSchemas";
 import { UserService } from "../services/userService";
 import { AuthenticatedRequest } from "../middleware/authMiddleware";
+import { TokenService } from "../services/tokenService";
 
 export const login = async (
   req: Request,
@@ -123,6 +124,40 @@ export const getMe = async (
         department: user.department,
       },
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Cierra la sesión del usuario invalidando el token actual
+ */
+export const logout = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    // Obtener el token de autorización
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+
+      // Añadir token a la lista negra
+      TokenService.blacklistToken(token);
+
+      // Responder con éxito
+      res.status(200).json({
+        success: true,
+        message: "Sesión cerrada exitosamente",
+      });
+    } else {
+      // Si no hay token, simplemente responder con éxito
+      res.status(200).json({
+        success: true,
+        message: "No había sesión activa",
+      });
+    }
   } catch (error) {
     next(error);
   }
