@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { BarChart3, Download, Filter, Users } from 'lucide-react';
 import { useReportStore } from '../store/reportStore';
+import { useAuthStore } from '../store/authStore';
 import { DepartmentReport } from '../services/reportService';
 
 export const Reports: React.FC = () => {
   const { departmentReports, loadDepartmentReports, isLoading, error, loadUserReport, userReport } = useReportStore();
+  const { user } = useAuthStore(); // Obtener el usuario actual del AuthStore
 
   useEffect(() => {
     loadDepartmentReports();
@@ -25,8 +27,13 @@ export const Reports: React.FC = () => {
 
   const handleLoadUserReport = async () => {
     try {
-      // Implementar lógica para cargar el reporte del usuario
-      await loadUserReport(1); // ID del usuario quemado para pruebas
+      if (!user || !user.id) {
+        console.error("No hay un usuario autenticado o el usuario no tiene ID");
+        return;
+      }
+
+      // Usar el ID del usuario autenticado
+      await loadUserReport(user.id);
     } catch (error) {
       console.error("Error al cargar el reporte:", error);
     }
@@ -66,10 +73,11 @@ export const Reports: React.FC = () => {
           <div>
             <button
               onClick={handleLoadUserReport}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 mb-4"
+              disabled={!user}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="w-5 h-5" strokeWidth={1.5} />
-              <span>Cargar Reporte Usuario</span>
+              <span>Cargar Mi Reporte</span>
             </button>
           </div>
         </div>
