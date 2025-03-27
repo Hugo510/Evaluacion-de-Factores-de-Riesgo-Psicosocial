@@ -47,24 +47,33 @@ export class ReportService {
 
   /**
    * Obtiene reportes agregados por departamento.
-   * Este es un ejemplo de consulta agregada; se puede ajustar según las necesidades.
    * @returns Lista de reportes agregados por departamento.
    */
   static async getDepartmentReports(): Promise<any> {
-    // Ejemplo de consulta utilizando SQL crudo para obtener totales por departamento
-    const reports = await prisma.$queryRaw<
-      { department: string; totalResponses: bigint }[]
-    >`
-      SELECT u.department, COUNT(r.id) as totalResponses
-      FROM User u
-      JOIN Response r ON u.id = r.userId
-      GROUP BY u.department
-    `;
+    // Obtener todos los departamentos únicos
+    const departments = await prisma.user.groupBy({
+      by: ["department"],
+    });
 
-    // Convertir BigInt a números para evitar errores de serialización
-    return reports.map((report) => ({
-      department: report.department,
-      totalResponses: Number(report.totalResponses),
-    }));
+    // Preparar el resultado
+    const reports = [];
+
+    // Para cada departamento, contar las respuestas
+    for (const dept of departments) {
+      const totalResponses = await prisma.response.count({
+        where: {
+          user: {
+            department: dept.department,
+          },
+        },
+      });
+
+      reports.push({
+        department: dept.department,
+        totalResponses,
+      });
+    }
+
+    return reports;
   }
 }
