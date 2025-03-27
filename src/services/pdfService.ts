@@ -1,11 +1,12 @@
 // src/services/pdfService.ts
 
 import PDFDocument from "pdfkit";
+import { RiskLevel } from "@prisma/client";
 
 export interface ReportData {
   userName: string;
   department: string;
-  riskLevel: "LOW" | "MEDIUM" | "HIGH";
+  riskLevel: RiskLevel;
   totalScore: number;
   recommendations: string[];
 }
