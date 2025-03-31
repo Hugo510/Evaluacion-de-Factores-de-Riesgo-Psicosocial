@@ -1,87 +1,28 @@
-# Evaluacion-de-Factores-de-Riesgo-Psicosocial
+# API para Evaluación de Riesgos Psicosociales (NOM-035)
 
-Una aplicación web interactiva que permita aplicar los cuestionarios sobre factores de riesgo psicosocial (según la NOM-035) a los trabajadores de una organización. La aplicación debe recoger respuestas, calcular los resultados y proporcionar un análisis inicial sobre el riesgo psicosocial y los posibles acontecimientos traumáticos severos.
+## Descripción
 
-## Estructura del Repositorio
+Este proyecto implementa una API RESTful para la identificación, análisis y prevención de los factores de riesgo psicosocial en el entorno laboral, conforme a los requerimientos de la Norma Oficial Mexicana NOM-035-STPS-2018.
 
-- `/frontend`: Contiene la aplicación de cliente desarrollada con React y Vite
-- `/backend`: Contiene la API REST desarrollada con Node.js
+## Características
 
-## Requisitos Previos del Sistema
+- Autenticación mediante JWT
+- Gestión de cuestionarios según la NOM-035
+- Recolección de respuestas de los trabajadores
+- Análisis y generación de reportes personales y por departamento
+- Documentación con Swagger
+- Validación de entrada con Zod
+- Registro de actividad (logging)
+- Límite de tasas de solicitud (rate limiting)
+- Monitoreo de salud del servicio
 
-- Node.js (versión 14.x o superior)
-- npm (generalmente viene instalado con Node.js)
-- MySQL (v8.x o superior) o MariaDB con una base de datos creada
-- Acceso a las credenciales de la base de datos
+## Requisitos previos
 
-## Instrucciones para el Frontend
+- Node.js (v16 o superior)
+- MySQL (v8 o superior)
+- npm o yarn
 
-### Ejecutando la aplicacion Frontend
-
-Sigue estos pasos para configurar el proyecto en tu entorno local:
-
-1. Clona este repositorio:
-
-   ```bash
-   git clone https://github.com/tu-usuario/evaluacion-riesgo.git
-   ```
-
-2. Navega al directorio del proyecto:
-
-   ```bash
-   cd evaluacion-riesgo-frontend
-   ```
-
-3. Instala las dependencias:
-   ```bash
-   npm install
-   # o si usas Yarn
-   yarn install
-   ```
-
----
-
-## Ejecución
-
-Para iniciar el servidor de desarrollo, ejecuta:
-
-```bash
-npm start
-# o si usas Yarn
-yarn start
-```
-
-Esto abrirá la aplicación en tu navegador en la dirección `http://localhost:3000`.
-
----
-
-## Estructura del Proyecto
-
-```
-evaluacion-riesgo-frontend/
-├── public/               # Archivos estáticos
-├── src/
-│   ├── components/       # Componentes reutilizables
-│   ├── services/         # Lógica para consumir APIs
-│   ├── App.js            # Componente principal
-│   └── index.js          # Punto de entrada
-├── package.json          # Configuración del proyecto
-└── README.md             # Documentación
-```
-
----
-
-## Tecnologías Utilizadas
-
-- **React.js**: Biblioteca principal para la construcción de la interfaz de usuario.
-- **Axios**: Para realizar solicitudes HTTP.
-- **React Router**: Para la navegación entre páginas.
-- **CSS Modules**: Para estilos encapsulados.
-- **ESLint y Prettier**: Para mantener un código limpio y consistente.
-
----
-
-## Intrucciones para el Backend
+## Instalación
 
 1. Clonar el repositorio:
 

@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Configuración general
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enumeraciones
+enum Role {
+  ADMIN  // Administrador con acceso total
+  WORKER // Trabajador que solo puede responder cuestionarios
+}
+
+enum RiskLevel {
+  VERY_LOW   // Riesgo despreciable o nulo
+  LOW        // Riesgo bajo
+  MEDIUM     // Riesgo medio
+  HIGH       // Riesgo alto
+  VERY_HIGH  // Riesgo muy alto
+}
+
+// Modelo de usuario
+model User {
+  id         Int        @id @default(autoincrement())
+  name       String
+  email      String     @unique
+  password   String
+  role       Role       @default(WORKER)
+  department String?
+  responses  Response[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("users")
+}
+
+// Modelo de cuestionario
+model Questionnaire {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  questions   Question[]
+  responses   Response[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("questionnaires")
+}
+
+// Modelo de pregunta
+model Question {
+  id              Int          @id @default(autoincrement())
+  text            String
+  category        String       // Dominio o categoría según NOM-035
+  questionnaire   Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  questionnaireId Int
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@map("questions")
+}
+
+// Modelo de respuesta a cuestionario
+model Response {
+  id              Int          @id @default(autoincrement())
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          Int
+  questionnaire   Questionnaire @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  questionnaireId Int
+  // Respuestas a preguntas individuales (array JSON)
+  answers         Json         // [{ questionId: number, value: number }]
+  riskLevel       RiskLevel    // Nivel de riesgo calculado
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@map("responses")
+}
